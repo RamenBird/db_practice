@@ -10,12 +10,12 @@ import com.example.tablemeta.ForeignRefer;
 
 class ColumnInfoImpl implements ColumnInfo, ForeignRefer {
     ColumnInfoImpl foreignColumn;
-    String columnName;
-    FieldRawInfoImpl field;
+    String mColumnName;
+    FieldRawInfoImpl mFieldRawInfo;
 
     @Override
     public String getColumnName() {
-        return columnName;
+        return mColumnName;
     }
 
     @Override
@@ -25,7 +25,7 @@ class ColumnInfoImpl implements ColumnInfo, ForeignRefer {
 
     @Override
     public FieldRawInfo getFieldRawInfo() {
-        return null;
+        return mFieldRawInfo;
     }
 
     @Override

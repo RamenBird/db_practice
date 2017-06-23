@@ -4,15 +4,15 @@ import com.example.language.StorageType;
 import com.example.tablemetabuilder.TypeAdapter;
 
 /**
- * Created by RamenBird on 2017/6/8.
+ * Created by RamenBird on 2017/6/23.
  */
 
-public class BooleanAdapter implements TypeAdapter {
-    private static BooleanAdapter sInstance;
+public class IntAdapter implements TypeAdapter {
+    private static IntAdapter sInstance;
 
-    public static BooleanAdapter instance() {
+    public static IntAdapter instance() {
         if (sInstance == null)
-            sInstance = new BooleanAdapter();
+            sInstance = new IntAdapter();
 
         return sInstance;
     }
@@ -24,17 +24,17 @@ public class BooleanAdapter implements TypeAdapter {
 
     @Override
     public String getStorageType() {
-        return "INTEGER";
+        return "REAL";
     }
 
     @Override
     public String getFromRawTypeText(String expression) {
-        return String.format("%s ? 1 : 0", expression);
+        return expression;
     }
 
     @Override
     public String getFromDbTypeText(String expression) {
-        return String.format("%s != 0", expression);
+        return expression;
     }
 
     @Override

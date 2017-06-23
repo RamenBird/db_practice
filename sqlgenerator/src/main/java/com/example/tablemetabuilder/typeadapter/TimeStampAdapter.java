@@ -4,41 +4,41 @@ import com.example.language.StorageType;
 import com.example.tablemetabuilder.TypeAdapter;
 
 /**
- * Created by RamenBird on 2017/6/8.
+ * Created by RamenBird on 2017/6/23.
  */
 
-public class BooleanAdapter implements TypeAdapter {
-    private static BooleanAdapter sInstance;
+public class TimeStampAdapter implements TypeAdapter {
+    private static TimeStampAdapter instance;
 
-    public static BooleanAdapter instance() {
-        if (sInstance == null)
-            sInstance = new BooleanAdapter();
+    public static TimeStampAdapter instance() {
+        if (instance == null)
+            instance = new TimeStampAdapter();
 
-        return sInstance;
+        return instance;
     }
 
     @Override
     public StorageType getRawStorageType() {
-        return StorageType.INTEGER;
+        return StorageType.REAL;
     }
 
     @Override
     public String getStorageType() {
-        return "INTEGER";
+        return "REAL";
     }
 
     @Override
     public String getFromRawTypeText(String expression) {
-        return String.format("%s ? 1 : 0", expression);
+        return expression + ".getTime()";
     }
 
     @Override
     public String getFromDbTypeText(String expression) {
-        return String.format("%s != 0", expression);
+        return "new Date(" + expression + ")";
     }
 
     @Override
     public String getReadFromCursorText(String cursor, String columnIndex) {
-        return String.format("%s.getInt(%s)", cursor, columnIndex);
+        return String.format("%s.getLong(%s)", cursor, columnIndex);
     }
 }

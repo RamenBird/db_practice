@@ -52,7 +52,7 @@ public class TheClass extends AbstractProcessor {
 
             try {
                 List<TableInfo> tableInfos = dbParser.parseTableMeta(context, tableElements);
-                new HardMaker().generateSourceContent(context, tableInfos, processingEnv.getFiler());
+                new JavaPoetImpl().generateSourceContent(context, tableInfos, processingEnv.getFiler());
             } catch (Exception e) {
                 e.printStackTrace();
             }

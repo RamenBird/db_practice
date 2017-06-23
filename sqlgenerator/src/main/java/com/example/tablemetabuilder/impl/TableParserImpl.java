@@ -111,11 +111,12 @@ class TableParserImpl implements TableParser {
                             continue;
 
                         ColumnInfoImpl column = new ColumnInfoImpl();
-                        column.columnName = fieldName;
-                        column.field = new FieldRawInfoImpl();
-                        column.field.getterName = s1;
-                        column.field.setterName = s2;
-                        column.field.fieldName = fieldName;
+                        column.mColumnName = fieldName;
+                        column.mFieldRawInfo = new FieldRawInfoImpl();
+                        column.mFieldRawInfo.getterName = s1;
+                        column.mFieldRawInfo.setterName = s2;
+                        column.mFieldRawInfo.fieldName = fieldName;
+                        column.mFieldRawInfo.mElement = element1;
 
                         tableInfoImpl.columns.add(column);
                     }
@@ -129,11 +130,12 @@ class TableParserImpl implements TableParser {
                         continue;
 
                     ColumnInfoImpl column = new ColumnInfoImpl();
-                    column.columnName = fieldName;
-                    column.field = new FieldRawInfoImpl();
-                    column.field.getterName = s1;
-                    column.field.setterName = s2;
-                    column.field.fieldName = fieldName;
+                    column.mColumnName = fieldName;
+                    column.mFieldRawInfo = new FieldRawInfoImpl();
+                    column.mFieldRawInfo.getterName = s1;
+                    column.mFieldRawInfo.setterName = s2;
+                    column.mFieldRawInfo.fieldName = fieldName;
+                    column.mFieldRawInfo.mElement = element1;
 
                     tableInfoImpl.columns.add(column);
                 }

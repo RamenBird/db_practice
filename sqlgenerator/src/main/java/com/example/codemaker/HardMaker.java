@@ -1,8 +1,8 @@
 package com.example.codemaker;
 
-import com.example.tablemetabuilder.Context;
 import com.example.tablemeta.ColumnInfo;
 import com.example.tablemeta.TableInfo;
+import com.example.tablemetabuilder.Context;
 import com.example.tablemetabuilder.TypeAdapter;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class HardMaker implements SourceFileGenerator {
 
                     stringBuilder.append(column.getColumnName());
                     stringBuilder.append(" ");
-                    stringBuilder.append(context.getTypeAdapter(column));
+                    stringBuilder.append(context.getTypeAdapter(column).getStorageType());
 
                     if (column.isPrimaryKey())
                         stringBuilder.append(" PRIMARY KEY");
@@ -133,7 +133,7 @@ public class HardMaker implements SourceFileGenerator {
                         content.addOneLineExpression(String.format("s.%s(%s)",
                                columnInfo.getFieldRawInfo().getSetterMethodName(),
                                typeAdapter.getFromDbTypeText(typeAdapter.getReadFromCursorText("cursor",
-                                      columnInfo.getColumnName()))));
+                                      "cursor.getColumnIndex(\"" + columnInfo.getColumnName() + "\")"))));
                     }
 
                     content.addOneLineExpression("list.add(s)");
