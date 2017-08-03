@@ -24,7 +24,7 @@ public class IntegerAdapter implements TypeAdapter {
 
     @Override
     public String getStorageType() {
-        return "REAL";
+        return "INTEGER";
     }
 
     @Override

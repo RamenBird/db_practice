@@ -3,6 +3,7 @@ package com.example.codemaker;
 import com.example.tablemeta.ColumnInfo;
 import com.example.tablemeta.TableInfo;
 import com.example.tablemetabuilder.Context;
+import com.example.tablemetabuilder.ParseResult;
 import com.example.tablemetabuilder.TypeAdapter;
 
 import java.io.IOException;
@@ -33,6 +34,8 @@ public class HardMaker implements SourceFileGenerator {
                 stringBuilder.append(tableInfo.getTableName());
                 stringBuilder.append("(");
 
+                boolean flag = false;
+
                 List<ColumnInfo> columnInfos = tableInfo.getColumns();
                 for (int i = 0; i < columnInfos.size(); i++) {
                     ColumnInfo column = columnInfos.get(i);
@@ -41,9 +44,10 @@ public class HardMaker implements SourceFileGenerator {
                     stringBuilder.append(" ");
                     stringBuilder.append(context.getTypeAdapter(column).getStorageType());
 
-                    if (column.isPrimaryKey())
+                    if (!flag && column.isPrimaryKey()) {
                         stringBuilder.append(" PRIMARY KEY");
-                    else if (column.isUnique())
+                        flag = true;
+                    } else if (column.isPrimaryKey() || column.isUnique())
                         stringBuilder.append(" UNIQUE");
 
                     if (column.containNotNullConstraint())
@@ -55,10 +59,10 @@ public class HardMaker implements SourceFileGenerator {
                     if (i != columnInfos.size() - 1)
                         stringBuilder.append(",");
                 }
+                stringBuilder.append(");");
             }
         }
 
-        stringBuilder.append(");");
 
         int cutSize = 80;
         int count = stringBuilder.length() / cutSize;
@@ -76,7 +80,7 @@ public class HardMaker implements SourceFileGenerator {
     }
 
     @Override
-    public void generateSourceContent(Context context, List<TableInfo> tableInfos, Filer filer) {
+    public void generateSourceContent(Context context, ParseResult parseResult, Filer filer) {
         try {
             JavaFileObject javaFileObject = filer.createSourceFile(context.getTargetFileClassFullPath(), (Element) null);
             Writer w = javaFileObject.openWriter();
@@ -91,6 +95,7 @@ public class HardMaker implements SourceFileGenerator {
             imports.add("android.database.Cursor");
             imports.add("android.content.ContentValues");
 
+            List<TableInfo> tableInfos = parseResult.getTableInfos();
             for (TableInfo tableInfo : tableInfos) {
                 if (!context.useClassFullPath(tableInfo))
                     imports.add(tableInfo.getClassRawInfo().getClassFullName());

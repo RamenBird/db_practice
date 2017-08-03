@@ -3,6 +3,7 @@ package com.example.tablemetabuilder.impl;
 import com.example.annotation.Column;
 import com.example.tablemeta.TableInfo;
 import com.example.tablemetabuilder.Context;
+import com.example.tablemetabuilder.ParseResult;
 import com.example.tablemetabuilder.TableParser;
 
 import java.util.ArrayList;
@@ -56,9 +57,21 @@ class TableParserImpl implements TableParser {
         return s == null || s.equals("");
     }
 
+    private static final void getFieldAccessorNames(String fieldName, Column columnInfo, String[] methodsNames) {
+        if (columnInfo == null || columnInfo.ignore())
+            return;
+
+        methodsNames[0] = isEmpty(columnInfo.getter()) ? doGetterNameTransfer(fieldName) :
+               columnInfo.getter();
+        methodsNames[1] = isEmpty(columnInfo.setter()) ? doSetterNameTransfer(fieldName) :
+               columnInfo.setter();
+    }
+
     @Override
-    public List<TableInfo> parseTableMeta(Context context, Collection<? extends Element> elements) {
+    public ParseResult parseTableMeta(Context context, Collection<? extends Element> elements) {
+        ParseResult parseResult = new ParseResult();
         List<TableInfo> tableInfos = new ArrayList<>();
+        parseResult.setTableInfos(tableInfos);
 
         for (Element element : elements) {
             TableInfoImpl tableInfoImpl = new TableInfoImpl();
@@ -93,58 +106,42 @@ class TableParserImpl implements TableParser {
                     fields.add(enclosedElement);
             }
 
-            for (Element element1 : fields) {
-                Column columnInfo = element1.getAnnotation(Column.class);
-                String fieldName = element1.getSimpleName().toString();
-                if (columnInfo != null) {
-                    if (!columnInfo.ignore()) {
-                        final String s1 = isEmpty(columnInfo.getter()) ? doGetterNameTransfer(fieldName) :
-                               columnInfo.getter();
+            //avoid multi-primary annotation
+            boolean flag = true;
+            for (Element fieldElement : fields) {
+                Column rawInfo = fieldElement.getAnnotation(Column.class);
+                String fieldName = fieldElement.getSimpleName().toString();
+                String[] outMethodNames = new String[2];
 
-                        if (!methodNames.contains(s1))
-                            continue;
+                getFieldAccessorNames(fieldName, rawInfo, outMethodNames);
 
-                        final String s2 = isEmpty(columnInfo.setter()) ? doSetterNameTransfer(fieldName) :
-                               columnInfo.setter();
+                if (!methodNames.contains(outMethodNames[0]) || !methodNames.contains(outMethodNames[1]))
+                    continue;
 
-                        if (!methodNames.contains(s2))
-                            continue;
+                ColumnInfoImpl column = new ColumnInfoImpl();
+                column.columnName = fieldName;
+                column.fieldRawInfo = new FieldRawInfoImpl();
+                column.fieldRawInfo.getterName = outMethodNames[0];
+                column.fieldRawInfo.setterName = outMethodNames[1];
+                column.fieldRawInfo.fieldName = fieldName;
+                column.fieldRawInfo.rawElement = fieldElement;
+                column.flags[0] = flag && rawInfo != null && rawInfo.primary();
+                column.flags[1] = rawInfo != null && rawInfo.stable();
+                column.flags[2] = rawInfo != null && rawInfo.autoIncrement();
+                column.flags[3] = rawInfo != null && rawInfo.unique();
+                column.flags[4] = rawInfo != null && rawInfo.notNull();
 
-                        ColumnInfoImpl column = new ColumnInfoImpl();
-                        column.mColumnName = fieldName;
-                        column.mFieldRawInfo = new FieldRawInfoImpl();
-                        column.mFieldRawInfo.getterName = s1;
-                        column.mFieldRawInfo.setterName = s2;
-                        column.mFieldRawInfo.fieldName = fieldName;
-                        column.mFieldRawInfo.mElement = element1;
+                if (column.flags[0])
+                    flag = false;
 
-                        tableInfoImpl.columns.add(column);
-                    }
-                } else {
-                    final String s1 = doGetterNameTransfer(fieldName);
-                    if (!methodNames.contains(s1))
-                        continue;
-
-                    final String s2 = doSetterNameTransfer(fieldName);
-                    if (!methodNames.contains(s2))
-                        continue;
-
-                    ColumnInfoImpl column = new ColumnInfoImpl();
-                    column.mColumnName = fieldName;
-                    column.mFieldRawInfo = new FieldRawInfoImpl();
-                    column.mFieldRawInfo.getterName = s1;
-                    column.mFieldRawInfo.setterName = s2;
-                    column.mFieldRawInfo.fieldName = fieldName;
-                    column.mFieldRawInfo.mElement = element1;
-
-                    tableInfoImpl.columns.add(column);
-                }
+                tableInfoImpl.columns.add(column);
             }
+
 
             tableInfos.add(tableInfoImpl);
         }
 
-        return tableInfos;
+        return parseResult;
     }
 
     @Override

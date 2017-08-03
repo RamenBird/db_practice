@@ -1,16 +1,14 @@
 package com.example;
 
 import com.example.annotation.Ramen;
-import com.example.codemaker.HardMaker;
 import com.example.codemaker.JavaPoetImpl;
-import com.example.tablemeta.TableInfo;
 import com.example.tablemetabuilder.Context;
+import com.example.tablemetabuilder.ParseResult;
 import com.example.tablemetabuilder.TableParser;
 import com.example.tablemetabuilder.TableParserFactory;
 import com.google.auto.service.AutoService;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -51,8 +49,8 @@ public class TheClass extends AbstractProcessor {
             TableParser dbParser = TableParserFactory.getDefault().createDbClassParser(processingEnv);
 
             try {
-                List<TableInfo> tableInfos = dbParser.parseTableMeta(context, tableElements);
-                new JavaPoetImpl().generateSourceContent(context, tableInfos, processingEnv.getFiler());
+                ParseResult parseResult = dbParser.parseTableMeta(context, tableElements);
+                new JavaPoetImpl().generateSourceContent(context, parseResult, processingEnv.getFiler());
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -1,9 +1,7 @@
 package com.example.codemaker;
 
 import com.example.tablemetabuilder.Context;
-import com.example.tablemeta.TableInfo;
-
-import java.util.List;
+import com.example.tablemetabuilder.ParseResult;
 
 import javax.annotation.processing.Filer;
 
@@ -12,5 +10,5 @@ import javax.annotation.processing.Filer;
  */
 
 public interface SourceFileGenerator {
-    void generateSourceContent(Context context, List<TableInfo> tableInfos, Filer filer);
+    void generateSourceContent(Context context, ParseResult parseResult, Filer filer);
 }

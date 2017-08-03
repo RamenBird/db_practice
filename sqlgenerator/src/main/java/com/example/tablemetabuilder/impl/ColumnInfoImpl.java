@@ -9,13 +9,13 @@ import com.example.tablemeta.ForeignRefer;
  */
 
 class ColumnInfoImpl implements ColumnInfo, ForeignRefer {
-    ColumnInfoImpl foreignColumn;
-    String mColumnName;
-    FieldRawInfoImpl mFieldRawInfo;
+    String columnName;
+    FieldRawInfoImpl fieldRawInfo;
+    boolean[] flags = new boolean[5];
 
     @Override
     public String getColumnName() {
-        return mColumnName;
+        return columnName;
     }
 
     @Override
@@ -25,31 +25,36 @@ class ColumnInfoImpl implements ColumnInfo, ForeignRefer {
 
     @Override
     public FieldRawInfo getFieldRawInfo() {
-        return mFieldRawInfo;
+        return fieldRawInfo;
     }
 
     @Override
     public boolean containNotNullConstraint() {
-        return false;
+        return flags[4];
     }
 
     @Override
     public boolean isUnique() {
-        return false;
+        return flags[3];
     }
 
     @Override
     public boolean isPrimaryKey() {
-        return false;
+        return flags[0];
     }
 
     @Override
     public boolean isAutoIncrement() {
-        return false;
+        return flags[2];
+    }
+
+    @Override
+    public boolean isStable() {
+        return flags[1];
     }
 
     @Override
     public ColumnInfo getColumnInfo() {
-        return foreignColumn;
+        return null;
     }
 }

@@ -3,7 +3,6 @@ package com.example.tablemetabuilder;
 import com.example.tablemeta.TableInfo;
 
 import java.util.Collection;
-import java.util.List;
 
 import javax.lang.model.element.Element;
 
@@ -12,7 +11,7 @@ import javax.lang.model.element.Element;
  */
 
 public interface TableParser {
-    List<TableInfo> parseTableMeta(Context context, Collection<? extends Element> element);
+    ParseResult parseTableMeta(Context context, Collection<? extends Element> element);
 
     void changeTableName(TableInfo info, String newTableName);
 }

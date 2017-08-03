@@ -4,11 +4,11 @@ import com.example.tablemeta.ColumnInfo;
 import com.example.tablemetabuilder.Context;
 import com.example.tablemetabuilder.TypeAdapter;
 import com.example.tablemetabuilder.typeadapter.BooleanAdapter;
+import com.example.tablemetabuilder.typeadapter.FloatAdapter;
 import com.example.tablemetabuilder.typeadapter.IntAdapter;
 import com.example.tablemetabuilder.typeadapter.IntegerAdapter;
+import com.example.tablemetabuilder.typeadapter.StringAdapter;
 import com.example.tablemetabuilder.typeadapter.TimeStampAdapter;
-
-import java.util.Date;
 
 import javax.lang.model.type.TypeMirror;
 
@@ -48,6 +48,10 @@ public class CurrentContext extends Context {
                     return IntegerAdapter.instance();
                 if (typeMirror.toString().equals("java.util.Date"))
                     return TimeStampAdapter.instance();
+                if (typeMirror.toString().equals("java.lang.String"))
+                    return StringAdapter.instance();
+                if (typeMirror.toString().equals("java.lang.Float"))
+                    return FloatAdapter.instance();
         }
         return null;
     }

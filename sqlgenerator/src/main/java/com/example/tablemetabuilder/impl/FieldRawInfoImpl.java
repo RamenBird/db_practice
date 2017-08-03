@@ -3,7 +3,6 @@ package com.example.tablemetabuilder.impl;
 import com.example.tablemeta.FieldRawInfo;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.type.TypeMirror;
 
 /**
  * Created by RamenBird on 2017/1/19.
@@ -13,7 +12,7 @@ class FieldRawInfoImpl implements FieldRawInfo {
     String getterName;
     String setterName;
     String fieldName;
-    Element mElement;
+    Element rawElement;
 
     @Override
     public String getGetterMethodName() {
@@ -32,6 +31,6 @@ class FieldRawInfoImpl implements FieldRawInfo {
 
     @Override
     public Element getFieldElement() {
-        return mElement;
+        return rawElement;
     }
 }

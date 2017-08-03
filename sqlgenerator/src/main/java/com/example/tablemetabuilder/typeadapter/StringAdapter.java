@@ -4,27 +4,27 @@ import com.example.language.StorageType;
 import com.example.tablemetabuilder.TypeAdapter;
 
 /**
- * Created by RamenBird on 2017/6/23.
+ * Created by RamenBird on 2017/7/21.
  */
 
-public class IntAdapter implements TypeAdapter {
-    private static IntAdapter sInstance;
+public class StringAdapter implements TypeAdapter {
+    private static StringAdapter sInstance;
 
-    public static IntAdapter instance() {
+    public static StringAdapter instance() {
         if (sInstance == null)
-            sInstance = new IntAdapter();
+            sInstance = new StringAdapter();
 
         return sInstance;
     }
 
     @Override
     public StorageType getRawStorageType() {
-        return StorageType.INTEGER;
+        return StorageType.TEXT;
     }
 
     @Override
     public String getStorageType() {
-        return "INTEGER";
+        return "TEXT";
     }
 
     @Override
@@ -39,6 +39,6 @@ public class IntAdapter implements TypeAdapter {
 
     @Override
     public String getReadFromCursorText(String cursor, String columnIndex) {
-        return String.format("%s.getInt(%s)", cursor, columnIndex);
+        return String.format("%s.getString(%s)", cursor, columnIndex);
     }
 }

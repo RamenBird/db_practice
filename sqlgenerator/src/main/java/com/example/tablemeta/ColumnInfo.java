@@ -18,4 +18,6 @@ public interface ColumnInfo {
     boolean isPrimaryKey();
 
     boolean isAutoIncrement();
+
+    boolean isStable();
 }

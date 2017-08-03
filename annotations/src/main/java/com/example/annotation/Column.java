@@ -12,9 +12,19 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.SOURCE)
 public @interface Column {
-    String setter();
+    String setter() default "";
 
-    String getter();
+    String getter() default "";
 
     boolean ignore() default false;
+
+    boolean stable() default false;
+
+    boolean notNull() default false;
+
+    boolean unique() default false;
+
+    boolean primary() default false;
+
+    boolean autoIncrement() default false;
 }
