@@ -19,6 +19,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 import javax.tools.Diagnostic;
 
 /**
@@ -43,28 +44,35 @@ class TableParserImpl implements TableParser {
             return "set" + fieldName;
     }
 
-    private static final String doGetterNameTransfer(String fieldName) {
+    private static final String doGetterNameTransfer(String fieldName, boolean b) {
         if (isEmpty(fieldName))
             return null;
 
+        String prefix = b ? "is" : "get";
+
         if (LOWER_CASE.matcher(fieldName).matches())
-            return "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+            return prefix + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
         else
-            return "get" + fieldName;
+            return prefix + fieldName;
     }
 
     private final static boolean isEmpty(String s) {
         return s == null || s.equals("");
     }
 
-    private static final void getFieldAccessorNames(String fieldName, Column columnInfo, String[] methodsNames) {
-        if (columnInfo == null || columnInfo.ignore())
-            return;
+    private static final void getFieldAccessorNames(String fieldName, Column columnInfo, String[] methodsNames, boolean b) {
+        if (columnInfo == null) {
+            methodsNames[0] = doGetterNameTransfer(fieldName, b);
+            methodsNames[1] = doSetterNameTransfer(fieldName);
+        } else {
+            if (columnInfo.ignore())
+                return;
 
-        methodsNames[0] = isEmpty(columnInfo.getter()) ? doGetterNameTransfer(fieldName) :
-               columnInfo.getter();
-        methodsNames[1] = isEmpty(columnInfo.setter()) ? doSetterNameTransfer(fieldName) :
-               columnInfo.setter();
+            methodsNames[0] = isEmpty(columnInfo.getter()) ? doGetterNameTransfer(fieldName, b) :
+                   columnInfo.getter();
+            methodsNames[1] = isEmpty(columnInfo.setter()) ? doSetterNameTransfer(fieldName) :
+                   columnInfo.setter();
+        }
     }
 
     @Override
@@ -102,8 +110,9 @@ class TableParserImpl implements TableParser {
                 if (modifiers.contains(Modifier.STATIC))
                     continue;
 
-                if (context.supportType(enclosedElement.asType()))
+                if (context.supportType(enclosedElement.asType())) {
                     fields.add(enclosedElement);
+                }
             }
 
             //avoid multi-primary annotation
@@ -113,7 +122,10 @@ class TableParserImpl implements TableParser {
                 String fieldName = fieldElement.getSimpleName().toString();
                 String[] outMethodNames = new String[2];
 
-                getFieldAccessorNames(fieldName, rawInfo, outMethodNames);
+                getFieldAccessorNames(fieldName, rawInfo, outMethodNames, fieldElement.asType().getKind() == TypeKind.BOOLEAN);
+
+                print(outMethodNames[0]);
+                print(outMethodNames[1]);
 
                 if (!methodNames.contains(outMethodNames[0]) || !methodNames.contains(outMethodNames[1]))
                     continue;

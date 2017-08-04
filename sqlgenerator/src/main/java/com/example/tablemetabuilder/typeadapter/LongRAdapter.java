@@ -4,12 +4,12 @@ package com.example.tablemetabuilder.typeadapter;
  * Created by RamenBird on 2017/8/4.
  */
 
-public class FloatAdapter extends BaseTypeAdapter {
-    private static FloatAdapter sInstance;
+public class LongRAdapter extends BaseTypeAdapter {
+    private static LongRAdapter sInstance;
 
-    public static FloatAdapter instance() {
+    public static LongRAdapter instance() {
         if (sInstance == null)
-            sInstance = new FloatAdapter();
+            sInstance = new LongRAdapter();
 
         return sInstance;
     }
@@ -21,13 +21,13 @@ public class FloatAdapter extends BaseTypeAdapter {
 
     @Override
     public String getDtoTypeName() {
-        return "float";
+        return "java.lang.Long";
     }
 
     @Override
-    public String getReadingExpression(String cursorParam, String columnName) {
-        return String.format("%s.getFloat(%s.getColumnIndex(%s))", cursorParam,
-               cursorParam, columnName);
+    public String getReadingFunctionContent(String cursorParam, String columnName) {
+        return FUNCTION_TEMPLATE.replace("{1}", cursorParam).replace("{2}", columnName)
+               .replace("{3}", "null").replace("{4}", "Long");
     }
 
     @Override
@@ -37,6 +37,6 @@ public class FloatAdapter extends BaseTypeAdapter {
 
     @Override
     protected boolean isPrimitiveType() {
-        return true;
+        return false;
     }
 }

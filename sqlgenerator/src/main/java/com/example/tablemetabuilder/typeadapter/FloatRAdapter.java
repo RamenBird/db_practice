@@ -1,35 +1,33 @@
 package com.example.tablemetabuilder.typeadapter;
 
 /**
- * Created by RamenBird on 2017/6/23.
+ * Created by RamenBird on 2017/8/2.
  */
 
-public class IntegerAdapter extends BaseTypeAdapter {
-    private static IntegerAdapter sInstance;
+public class FloatRAdapter extends BaseTypeAdapter {
+    private static FloatRAdapter sInstance;
 
-    public static IntegerAdapter instance() {
+    public static FloatRAdapter instance() {
         if (sInstance == null)
-            sInstance = new IntegerAdapter();
+            sInstance = new FloatRAdapter();
 
         return sInstance;
     }
 
     @Override
     public String getStorageType() {
-        return "INTEGER";
+        return "REAL";
     }
 
     @Override
     public String getDtoTypeName() {
-        return "java.lang.Integer";
+        return "java.lang.Float";
     }
 
     @Override
     public String getReadingFunctionContent(String cursorParam, String columnName) {
-        String s = FUNCTION_TEMPLATE.replace("{1}", cursorParam).replace("{2}", columnName)
-               .replace("{3}", "null").replace("{4}", "Int");
-
-        return s;
+        return FUNCTION_TEMPLATE.replace("{1}", cursorParam).replace("{2}", columnName)
+               .replace("{3}", "null").replace("{4}", "Float");
     }
 
     @Override

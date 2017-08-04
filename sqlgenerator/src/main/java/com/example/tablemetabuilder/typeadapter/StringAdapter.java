@@ -1,13 +1,10 @@
 package com.example.tablemetabuilder.typeadapter;
 
-import com.example.language.StorageType;
-import com.example.tablemetabuilder.TypeAdapter;
-
 /**
  * Created by RamenBird on 2017/7/21.
  */
 
-public class StringAdapter implements TypeAdapter {
+public class StringAdapter extends BaseTypeAdapter {
     private static StringAdapter sInstance;
 
     public static StringAdapter instance() {
@@ -18,27 +15,30 @@ public class StringAdapter implements TypeAdapter {
     }
 
     @Override
-    public StorageType getRawStorageType() {
-        return StorageType.TEXT;
-    }
-
-    @Override
     public String getStorageType() {
         return "TEXT";
     }
 
     @Override
-    public String getFromRawTypeText(String expression) {
-        return expression;
+    public String getDtoTypeName() {
+        return "java.lang.String";
     }
 
     @Override
-    public String getFromDbTypeText(String expression) {
-        return expression;
+    public String getReadingFunctionContent(String cursorParam, String columnName) {
+        String s = FUNCTION_TEMPLATE.replace("{1}", cursorParam).replace("{2}", columnName)
+               .replace("{3}", "null").replace("{4}", "String");
+
+        return s;
     }
 
     @Override
-    public String getReadFromCursorText(String cursor, String columnIndex) {
-        return String.format("%s.getString(%s)", cursor, columnIndex);
+    public String getWritingExpression(String e) {
+        return e;
+    }
+
+    @Override
+    protected boolean isPrimitiveType() {
+        return false;
     }
 }

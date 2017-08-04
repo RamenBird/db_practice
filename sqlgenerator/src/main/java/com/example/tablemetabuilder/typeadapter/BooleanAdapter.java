@@ -1,13 +1,10 @@
 package com.example.tablemetabuilder.typeadapter;
 
-import com.example.language.StorageType;
-import com.example.tablemetabuilder.TypeAdapter;
-
 /**
  * Created by RamenBird on 2017/6/8.
  */
 
-public class BooleanAdapter implements TypeAdapter {
+public class BooleanAdapter extends BaseTypeAdapter {
     private static BooleanAdapter sInstance;
 
     public static BooleanAdapter instance() {
@@ -18,27 +15,28 @@ public class BooleanAdapter implements TypeAdapter {
     }
 
     @Override
-    public StorageType getRawStorageType() {
-        return StorageType.INTEGER;
-    }
-
-    @Override
     public String getStorageType() {
-        return "INTEGER";
+        return "INT2";
     }
 
     @Override
-    public String getFromRawTypeText(String expression) {
-        return String.format("%s ? 1 : 0", expression);
+    public String getDtoTypeName() {
+        return "bool";
     }
 
     @Override
-    public String getFromDbTypeText(String expression) {
-        return String.format("%s != 0", expression);
+    public String getReadingExpression(String cursorParam, String columnName) {
+        return String.format("%s.getInt(%s.getColumnIndex(%s)) == 1? true : false", cursorParam,
+               cursorParam, columnName);
     }
 
     @Override
-    public String getReadFromCursorText(String cursor, String columnIndex) {
-        return String.format("%s.getInt(%s)", cursor, columnIndex);
+    public String getWritingExpression(String valueExpression) {
+        return valueExpression + " ? 1 : 0";
+    }
+
+    @Override
+    protected boolean isPrimitiveType() {
+        return true;
     }
 }

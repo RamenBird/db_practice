@@ -2,13 +2,12 @@ package com.example.tablemetabuilder.impl;
 
 import com.example.tablemeta.ColumnInfo;
 import com.example.tablemeta.FieldRawInfo;
-import com.example.tablemeta.ForeignRefer;
 
 /**
  * Created by RamenBird on 2017/5/19.
  */
 
-class ColumnInfoImpl implements ColumnInfo, ForeignRefer {
+class ColumnInfoImpl implements ColumnInfo {
     String columnName;
     FieldRawInfoImpl fieldRawInfo;
     boolean[] flags = new boolean[5];
@@ -16,11 +15,6 @@ class ColumnInfoImpl implements ColumnInfo, ForeignRefer {
     @Override
     public String getColumnName() {
         return columnName;
-    }
-
-    @Override
-    public ForeignRefer getForeignReference() {
-        return this;
     }
 
     @Override
@@ -51,10 +45,5 @@ class ColumnInfoImpl implements ColumnInfo, ForeignRefer {
     @Override
     public boolean isStable() {
         return flags[1];
-    }
-
-    @Override
-    public ColumnInfo getColumnInfo() {
-        return null;
     }
 }

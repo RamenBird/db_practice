@@ -14,7 +14,7 @@ public abstract class Context {
 
     public abstract boolean supportType(TypeMirror typeMirror);
 
-    public abstract TypeAdapter getTypeAdapter(ColumnInfo columnInfo);
+    public abstract CursorAdapter getTypeAdapter(ColumnInfo columnInfo);
 
     public abstract String getTargetFileClassFullPath();
 

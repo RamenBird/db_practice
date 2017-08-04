@@ -1,13 +1,10 @@
 package com.example.tablemetabuilder.typeadapter;
 
-import com.example.language.StorageType;
-import com.example.tablemetabuilder.TypeAdapter;
-
 /**
  * Created by RamenBird on 2017/6/23.
  */
 
-public class TimeStampAdapter implements TypeAdapter {
+public class TimeStampAdapter extends BaseTypeAdapter {
     private static TimeStampAdapter instance;
 
     public static TimeStampAdapter instance() {
@@ -18,27 +15,28 @@ public class TimeStampAdapter implements TypeAdapter {
     }
 
     @Override
-    public StorageType getRawStorageType() {
-        return StorageType.REAL;
-    }
-
-    @Override
     public String getStorageType() {
-        return "REAL";
+        return "INTEGER";
     }
 
     @Override
-    public String getFromRawTypeText(String expression) {
-        return expression + ".getTime()";
+    public String getDtoTypeName() {
+        return "java.util.Date";
     }
 
     @Override
-    public String getFromDbTypeText(String expression) {
-        return "new Date(" + expression + ")";
+    public String getReadingFunctionContent(String cursorParam, String columnName) {
+        return FUNCTION_TEMPLATE.replace("{1}", "new Date(" + cursorParam).replace("{2}", columnName)
+               .replace("{3}", "null").replace("{4}", "Long").replace(");", "));");
     }
 
     @Override
-    public String getReadFromCursorText(String cursor, String columnIndex) {
-        return String.format("%s.getLong(%s)", cursor, columnIndex);
+    public String getWritingExpression(String e) {
+        return String.format("%s.getTime()", e);
+    }
+
+    @Override
+    protected boolean isPrimitiveType() {
+        return false;
     }
 }

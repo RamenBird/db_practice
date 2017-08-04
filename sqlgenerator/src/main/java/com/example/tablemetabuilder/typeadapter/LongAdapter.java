@@ -4,29 +4,29 @@ package com.example.tablemetabuilder.typeadapter;
  * Created by RamenBird on 2017/8/4.
  */
 
-public class FloatAdapter extends BaseTypeAdapter {
-    private static FloatAdapter sInstance;
+public class LongAdapter extends BaseTypeAdapter {
+    private static LongAdapter sInstance;
 
-    public static FloatAdapter instance() {
+    public static LongAdapter instance() {
         if (sInstance == null)
-            sInstance = new FloatAdapter();
+            sInstance = new LongAdapter();
 
         return sInstance;
     }
 
     @Override
     public String getStorageType() {
-        return "REAL";
+        return "INTEGER";
     }
 
     @Override
     public String getDtoTypeName() {
-        return "float";
+        return "long";
     }
 
     @Override
     public String getReadingExpression(String cursorParam, String columnName) {
-        return String.format("%s.getFloat(%s.getColumnIndex(%s))", cursorParam,
+        return String.format("%s.getLong(%s.getColumnIndex(%s))", cursorParam,
                cursorParam, columnName);
     }
 

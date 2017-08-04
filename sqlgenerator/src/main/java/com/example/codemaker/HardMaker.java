@@ -4,16 +4,10 @@ import com.example.tablemeta.ColumnInfo;
 import com.example.tablemeta.TableInfo;
 import com.example.tablemetabuilder.Context;
 import com.example.tablemetabuilder.ParseResult;
-import com.example.tablemetabuilder.TypeAdapter;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.processing.Filer;
-import javax.lang.model.element.Element;
-import javax.tools.JavaFileObject;
 
 /**
  * Created by RamenBird on 2017/1/13.
@@ -81,99 +75,99 @@ public class HardMaker implements SourceFileGenerator {
 
     @Override
     public void generateSourceContent(Context context, ParseResult parseResult, Filer filer) {
-        try {
-            JavaFileObject javaFileObject = filer.createSourceFile(context.getTargetFileClassFullPath(), (Element) null);
-            Writer w = javaFileObject.openWriter();
-            List<String> imports = new ArrayList<>();
-
-            stringBuilder = new StringBuilder();
-            writePackageName(context.getTargetFileClassFullPath());
-
-            imports.add("android.database.sqlite.SQLiteDatabase");
-            imports.add("java.util.List");
-            imports.add("java.util.ArrayList");
-            imports.add("android.database.Cursor");
-            imports.add("android.content.ContentValues");
-
-            List<TableInfo> tableInfos = parseResult.getTableInfos();
-            for (TableInfo tableInfo : tableInfos) {
-                if (!context.useClassFullPath(tableInfo))
-                    imports.add(tableInfo.getClassRawInfo().getClassFullName());
-            }
-
-            writeImports(imports);
-
-            stringBuilder.append("public class ");
-
-            int index = context.getTargetFileClassFullPath().lastIndexOf(".");
-            if (index != -1)
-                stringBuilder.append(context.getTargetFileClassFullPath().substring(index + 1,
-                       context.getTargetFileClassFullPath().length()));
-            stringBuilder.append("{\n");
-
-            writeField("String", "CREATE_SQL_STATEMENT", generateBuildTableSql(context,
-                   tableInfos), 3, true, true);
-
-
-            FunctionContent content = new FunctionContent();
-
-            for (TableInfo table : tableInfos) {
-                if (table != null) {
-                    final boolean useFullClassFullPath = context.useClassFullPath(table);
-
-                    String dtoType = useFullClassFullPath ? table.getClassRawInfo().getClassFullName() :
-                           table.getClassRawInfo().getClassName();
-
-                    content.clear();
-                    content.addOneLineExpression("List<%s> list = new ArrayList<>();", dtoType);
-                    content.addOneLineExpression(String.format("Cursor cursor = p0.rawQuery(\"select * from %s\", null)",
-                           table.getTableName()));
-                    content.enterBlock(String.format("for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())"));
-                    content.addOneLineExpression("%s s = new %s()", dtoType, dtoType);
-
-                    for (ColumnInfo columnInfo : table.getColumns()) {
-                        TypeAdapter typeAdapter = context.getTypeAdapter(columnInfo);
-                        if (typeAdapter == null)
-                            continue;
-                        content.addOneLineExpression(String.format("s.%s(%s)",
-                               columnInfo.getFieldRawInfo().getSetterMethodName(),
-                               typeAdapter.getFromDbTypeText(typeAdapter.getReadFromCursorText("cursor",
-                                      "cursor.getColumnIndex(\"" + columnInfo.getColumnName() + "\")"))));
-                    }
-
-                    content.addOneLineExpression("list.add(s)");
-                    content.exitBlock();
-                    content.addOneLineExpression("cursor.close()");
-                    content.addOneLineExpression("return list", dtoType);
-                    writeFunction("getAll" + table.getTableName(), content, 1, true, true,
-                           String.format("List<%s>", dtoType), "SQLiteDatabase");
-
-                    content.clear();
-                    content.addOneLineExpression("ContentValues contentValues = new ContentValues()");
-                    for (ColumnInfo columnInfo : table.getColumns()) {
-                        content.addOneLineExpression("contentValues.put(\"%s\", {1}.%s())", columnInfo.getColumnName(),
-                               columnInfo.getFieldRawInfo().getGetterMethodName());
-                    }
-                    content.addOneLineExpression("{0}.insert(\"%s\", null, contentValues)", table.getTableName());
-
-                    writeFunction("add" + table.getTableName(), content, 1, true, true,
-                           "void", "SQLiteDatabase", dtoType);
-                }
-            }
-
-            content.clear();
-            content.enterBlock("if (CREATE_SQL_STATEMENT != \"\")", true);
-            content.addOneLineExpression("{0}.execSQL(CREATE_SQL_STATEMENT)");
-            content.exitBlock();
-            writeFunction("createTables", content, 1, true, true, "void", "SQLiteDatabase");
-
-            stringBuilder.append("}");
-            w.append(stringBuilder.toString());
-            w.flush();
-            w.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            JavaFileObject javaFileObject = filer.createSourceFile(context.getTargetFileClassFullPath(), (Element) null);
+//            Writer w = javaFileObject.openWriter();
+//            List<String> imports = new ArrayList<>();
+//
+//            stringBuilder = new StringBuilder();
+//            writePackageName(context.getTargetFileClassFullPath());
+//
+//            imports.add("android.database.sqlite.SQLiteDatabase");
+//            imports.add("java.util.List");
+//            imports.add("java.util.ArrayList");
+//            imports.add("android.database.Cursor");
+//            imports.add("android.content.ContentValues");
+//
+//            List<TableInfo> tableInfos = parseResult.getTableInfos();
+//            for (TableInfo tableInfo : tableInfos) {
+//                if (!context.useClassFullPath(tableInfo))
+//                    imports.add(tableInfo.getClassRawInfo().getClassFullName());
+//            }
+//
+//            writeImports(imports);
+//
+//            stringBuilder.append("public class ");
+//
+//            int index = context.getTargetFileClassFullPath().lastIndexOf(".");
+//            if (index != -1)
+//                stringBuilder.append(context.getTargetFileClassFullPath().substring(index + 1,
+//                       context.getTargetFileClassFullPath().length()));
+//            stringBuilder.append("{\n");
+//
+//            writeField("String", "CREATE_SQL_STATEMENT", generateBuildTableSql(context,
+//                   tableInfos), 3, true, true);
+//
+//
+//            FunctionContent content = new FunctionContent();
+//
+//            for (TableInfo table : tableInfos) {
+//                if (table != null) {
+//                    final boolean useFullClassFullPath = context.useClassFullPath(table);
+//
+//                    String dtoType = useFullClassFullPath ? table.getClassRawInfo().getClassFullName() :
+//                           table.getClassRawInfo().getClassName();
+//
+//                    content.clear();
+//                    content.addOneLineExpression("List<%s> list = new ArrayList<>();", dtoType);
+//                    content.addOneLineExpression(String.format("Cursor cursor = p0.rawQuery(\"select * from %s\", null)",
+//                           table.getTableName()));
+//                    content.enterBlock(String.format("for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())"));
+//                    content.addOneLineExpression("%s s = new %s()", dtoType, dtoType);
+//
+//                    for (ColumnInfo columnInfo : table.getColumns()) {
+//                        CursorAdapter cursorAdapter = context.getTypeAdapter(columnInfo);
+//                        if (cursorAdapter == null)
+//                            continue;
+//                        content.addOneLineExpression(String.format("s.%s(%s)",
+//                               columnInfo.getFieldRawInfo().getSetterMethodName(),
+//                               cursorAdapter.getFromDbTypeText(cursorAdapter.getReadFromCursorText("cursor",
+//                                      "cursor.getColumnIndex(\"" + columnInfo.getColumnName() + "\")"))));
+//                    }
+//
+//                    content.addOneLineExpression("list.add(s)");
+//                    content.exitBlock();
+//                    content.addOneLineExpression("cursor.close()");
+//                    content.addOneLineExpression("return list", dtoType);
+//                    writeFunction("getAll" + table.getTableName(), content, 1, true, true,
+//                           String.format("List<%s>", dtoType), "SQLiteDatabase");
+//
+//                    content.clear();
+//                    content.addOneLineExpression("ContentValues contentValues = new ContentValues()");
+//                    for (ColumnInfo columnInfo : table.getColumns()) {
+//                        content.addOneLineExpression("contentValues.put(\"%s\", {1}.%s())", columnInfo.getColumnName(),
+//                               columnInfo.getFieldRawInfo().getGetterMethodName());
+//                    }
+//                    content.addOneLineExpression("{0}.insert(\"%s\", null, contentValues)", table.getTableName());
+//
+//                    writeFunction("add" + table.getTableName(), content, 1, true, true,
+//                           "void", "SQLiteDatabase", dtoType);
+//                }
+//            }
+//
+//            content.clear();
+//            content.enterBlock("if (CREATE_SQL_STATEMENT != \"\")", true);
+//            content.addOneLineExpression("{0}.execSQL(CREATE_SQL_STATEMENT)");
+//            content.exitBlock();
+//            writeFunction("createTables", content, 1, true, true, "void", "SQLiteDatabase");
+//
+//            stringBuilder.append("}");
+//            w.append(stringBuilder.toString());
+//            w.flush();
+//            w.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void writePackageName(String fullPath) {

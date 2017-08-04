@@ -2,11 +2,15 @@ package com.example;
 
 import com.example.tablemeta.ColumnInfo;
 import com.example.tablemetabuilder.Context;
-import com.example.tablemetabuilder.TypeAdapter;
+import com.example.tablemetabuilder.CursorAdapter;
 import com.example.tablemetabuilder.typeadapter.BooleanAdapter;
+import com.example.tablemetabuilder.typeadapter.BooleanRAdapter;
 import com.example.tablemetabuilder.typeadapter.FloatAdapter;
+import com.example.tablemetabuilder.typeadapter.FloatRAdapter;
 import com.example.tablemetabuilder.typeadapter.IntAdapter;
 import com.example.tablemetabuilder.typeadapter.IntegerAdapter;
+import com.example.tablemetabuilder.typeadapter.LongAdapter;
+import com.example.tablemetabuilder.typeadapter.LongRAdapter;
 import com.example.tablemetabuilder.typeadapter.StringAdapter;
 import com.example.tablemetabuilder.typeadapter.TimeStampAdapter;
 
@@ -28,7 +32,7 @@ public class CurrentContext extends Context {
     }
 
     @Override
-    public TypeAdapter getTypeAdapter(ColumnInfo columnInfo) {
+    public CursorAdapter getTypeAdapter(ColumnInfo columnInfo) {
         return getTypeAdapter(columnInfo.getFieldRawInfo().getFieldElement().asType());
     }
 
@@ -37,13 +41,19 @@ public class CurrentContext extends Context {
         return "com.ramenbird.GeneratedSqlClass";
     }
 
-    private TypeAdapter getTypeAdapter(TypeMirror typeMirror) {
+    private CursorAdapter getTypeAdapter(TypeMirror typeMirror) {
         switch (typeMirror.getKind()) {
             case BOOLEAN:
                 return BooleanAdapter.instance();
             case INT:
                 return IntAdapter.instance();
+            case LONG:
+                return LongAdapter.instance();
+            case FLOAT:
+                return FloatAdapter.instance();
             case DECLARED:
+                if (typeMirror.toString().equals("java.lang.Boolean"))
+                    return BooleanRAdapter.instance();
                 if (typeMirror.toString().equals("java.lang.Integer"))
                     return IntegerAdapter.instance();
                 if (typeMirror.toString().equals("java.util.Date"))
@@ -51,7 +61,9 @@ public class CurrentContext extends Context {
                 if (typeMirror.toString().equals("java.lang.String"))
                     return StringAdapter.instance();
                 if (typeMirror.toString().equals("java.lang.Float"))
-                    return FloatAdapter.instance();
+                    return FloatRAdapter.instance();
+                if (typeMirror.toString().equals("java.lang.Long"))
+                    return LongRAdapter.instance();
         }
         return null;
     }

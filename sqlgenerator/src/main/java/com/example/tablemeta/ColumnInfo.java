@@ -7,8 +7,6 @@ package com.example.tablemeta;
 public interface ColumnInfo {
     String getColumnName();
 
-    ForeignRefer getForeignReference();
-
     FieldRawInfo getFieldRawInfo();
 
     boolean containNotNullConstraint();
