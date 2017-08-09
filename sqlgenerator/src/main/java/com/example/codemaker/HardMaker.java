@@ -48,7 +48,7 @@ public class HardMaker implements SourceFileGenerator {
                         stringBuilder.append(" NOT NULL");
 
                     if (column.isAutoIncrement())
-                        stringBuilder.append(" AUTO_INCREMENT");
+                        stringBuilder.append(" AUTOINCREMENT");
 
                     if (i != columnInfos.size() - 1)
                         stringBuilder.append(",");

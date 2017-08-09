@@ -75,6 +75,24 @@ class TableParserImpl implements TableParser {
         }
     }
 
+    private static boolean isSqlKeyword(String s) {
+        return "Transaction".equals(s);
+    }
+
+    private static String resolveClassName(String tableName, List<TableInfo> tableInfos) {
+        if (isSqlKeyword(tableName)) {
+            return resolveClassName(tableName + "1", tableInfos);
+        }
+
+        for (TableInfo tableInfo : tableInfos) {
+            if (tableInfo.getTableName().equals(tableName)) {
+                return resolveClassName(tableName + "1", tableInfos);
+            }
+        }
+
+        return tableName;
+    }
+
     @Override
     public ParseResult parseTableMeta(Context context, Collection<? extends Element> elements) {
         ParseResult parseResult = new ParseResult();
@@ -89,7 +107,7 @@ class TableParserImpl implements TableParser {
             tableInfoImpl.mDbClass = new ClassRawInfoImpl(element,
                    element.getSimpleName().toString(),
                    name.toString());
-            tableInfoImpl.tableName = element.getSimpleName().toString();
+            tableInfoImpl.tableName = resolveClassName(element.getSimpleName().toString(), tableInfos);
             List<String> methodNames = new ArrayList<>();
             List<Element> fields = new ArrayList<>();
 
@@ -123,9 +141,6 @@ class TableParserImpl implements TableParser {
                 String[] outMethodNames = new String[2];
 
                 getFieldAccessorNames(fieldName, rawInfo, outMethodNames, fieldElement.asType().getKind() == TypeKind.BOOLEAN);
-
-                print(outMethodNames[0]);
-                print(outMethodNames[1]);
 
                 if (!methodNames.contains(outMethodNames[0]) || !methodNames.contains(outMethodNames[1]))
                     continue;
